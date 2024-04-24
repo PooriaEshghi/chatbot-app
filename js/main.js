@@ -4,7 +4,7 @@ let textbox = document.getElementById("textbox");
 let chatContainer = document.getElementById("chatContainer");
 
 let user = {message:""}
-
+let httpRequest;
 let arrayOfPossibleMessages = [
     {"message":"How are you?",
     "response":"I'm great"
@@ -67,8 +67,7 @@ function initializOptions(){
     messageElement.style.margin = "10px";
     messageElement.style.padding = "5px";
     
-  options.forEach((elm,i) => {
-    console.log(elm, i);
+  options.forEach((elm,i) => {    
     messageElement.innerHTML += `
    <br>
     <span class="messageSpan">${elm.number} ${elm.chocie}</span>
@@ -77,12 +76,39 @@ function initializOptions(){
   messageElement.animate([{easing:"ease-in",opacity:0.4},{opacity:1}],{duration:500});
     chatContainer.appendChild(messageElement)
 }
+async function getweatherRequest(lat,long){   
+                  
+            const res = await fetch(
+                `http://api.weatherapi.com/v1/search.json?key=817f022a7871469e978151319242404&q=${lat},${long}`
+              )
+            const data = await res.json()
+            return data   
+        
+}
+function  getLocationAndWeather(){
+    navigator.geolocation.getCurrentPosition(async(pos) => {
+        let lat = pos.coords.latitude;
+        let long = pos.coords.longitude;        
+        let data = await getweatherRequest(lat,long);
+        console.log(data);
+        let city = data[0].name
+        let messagTosend = "<br>";
+        messagTosend +=  `
+        <br>
+         <span class="messageSpan">${city} </span>
+       `;
+    },(err) =>{
+
+    })
+};
+        
 function assistentResponse(messageText){
     let userChoice = parseInt(messageText.trim())
     switch (userChoice) {
         case 1:
         // get the weather
-        alert(" you choice weather")
+        // get location and weather
+        getLocationAndWeather();
             break;
         
         case 2:
